@@ -4417,11 +4417,11 @@ function Bracket.KeybindList(Self, KeybindList)
 end
 
 function Bracket.GetValue(Self, Flag)
-	local Element = Self.Utilities.FindElementByFlag(Self)
+	local Element = Self.Utilities.FindElementByFlag(Self, Flag)
 	if Element then return Element.Value end
 end
 function Bracket.SetValue(Self, Flag, Value)
-	local Element = Self.Utilities.FindElementByFlag(Self)
+	local Element = Self.Utilities.FindElementByFlag(Self, Flag)
 	if Element then Element.Value = Value end
 end
 

@@ -9,12 +9,8 @@ local CoreGui = game:GetService("CoreGui")
 local GuiInset = GuiService:GetGuiInset()
 local LocalPlayer = PlayerService.LocalPlayer
 
--- TODO: Change Window.Elements with Bracket.Elements and Window.Flags to Bracket.Flags (DONE)
 -- TODO: Use Self when available (?)
--- TODO: Benchmark rawget and table[key] in proxify
--- TODO: Move Flags NoOverwriteProxy to Utilities and use it from there (DONE)
 -- TODO: Make Bracket.Utilities.FormatForSave() and use it in Window.SaveConfig() (?)
--- TODO: Finish Bracket.Cursor() (DONE)
 -- TODO: Make Self.Utilities.IsWindowsVisible() for Bracket.Watermark()
 -- TODO: Get Window Instance for Bracket.KeybindList() somehow
 -- TODO: Rewrite dropdown options
@@ -320,7 +316,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
-			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
+			Config = Config:gsub(`{FolderName}/Configs/`, "")
 			Config = Config:gsub(".json", "")
 
 			Configs[#Configs + 1] = Config
@@ -338,7 +334,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
-			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
+			Config = Config:gsub(`{FolderName}/Configs/`, "")
 			Config = Config:gsub(".json", "")
 
 			Configs[#Configs + 1] = {
@@ -349,6 +345,16 @@ Bracket.Utilities = {
 		end
 
 		return Configs
+	end,
+	FormatForSave = function(Self, Value)
+		if type(Value) == "table" then
+			return HttpService:JSONEncode(Value)
+		end
+
+		return tostring(Value)
+	end,
+	IsWindowsVisible = function(Self, WindowInstance)
+		return WindowInstance and WindowInstance.Visible
 	end
 }
 Bracket.Instances = {
@@ -4371,17 +4377,17 @@ function Bracket.KeybindList(Self, KeybindList)
 		KeybindInstance.Size = Size
 	end)
 
-	-- Self.Instance.Background.Changed:Connect(function(Property)
-	-- 	if Property == "Image" then
-	-- 		KeybindInstance.Background.Image = Self.Instance.Background.Image
-	-- 	elseif Property == "ImageColor3" then
-	-- 		KeybindInstance.Background.ImageColor3 = Self.Instance.Background.ImageColor3
-	-- 	elseif Property == "ImageTransparency" then
-	-- 		KeybindInstance.Background.ImageTransparency = Self.Instance.Background.ImageTransparency
-	-- 	elseif Property == "TileSize" then
-	-- 		KeybindInstance.Background.TileSize = Self.Instance.Background.TileSize
-	-- 	end
-	-- end)
+	--[[Self.Instance.Background.Changed:Connect(function(Property)
+		if Property == "Image" then
+			KeybindInstance.Background.Image = Self.Instance.Background.Image
+		elseif Property == "ImageColor3" then
+			KeybindInstance.Background.ImageColor3 = Self.Instance.Background.ImageColor3
+		elseif Property == "ImageTransparency" then
+			KeybindInstance.Background.ImageTransparency = Self.Instance.Background.ImageTransparency
+		elseif Property == "TileSize" then
+			KeybindInstance.Background.TileSize = Self.Instance.Background.TileSize
+		end
+	end)]]
 
 	for Index, Element in pairs(Self.Elements) do
 		if Element.Type == "Keybind" and not Element.IgnoreList then
@@ -4446,7 +4452,7 @@ function Bracket.LoadConfig(Self, FolderName, Name)
 		local DecodedJSON = HttpService:JSONDecode(Data)
 
 		for Flag, Value in pairs(DecodedJSON) do
-			local Element = Self.Utilities.FindElementByFlag(Self.Elements, Flag)
+			local Element = Self.Utilities.FindElementByFlag(Self, Flag)
 			if Element ~= nil then Element.Value = Value end
 		end
 	end

@@ -109,6 +109,9 @@ Bracket.Utilities = {
 			end,
 			__newindex = function(Self, Key, Value)
 				local Element = Elements[#Elements]
+				if Element.IgnoreFlag then
+					return
+				end
 				if Proxy[Key] ~= nil and not table.find(Exclude, Element) then
 					local Element = Elements[#Elements]
 					local IncrementedKey = IncrementKey(Key)
@@ -3727,7 +3730,7 @@ Bracket.Templates = {
 		DropdownInstance.Title:GetPropertyChangedSignal("TextBounds"):Connect(function()
 			DropdownInstance.Title.Size = Dropdown.HideName and UDim2.fromScale(1, 0) or UDim2.new(1, 0, 0, DropdownInstance.Title.TextBounds.Y)
 			DropdownInstance.Background.Position = UDim2.new(0.5, 0, 0, DropdownInstance.Title.Size.Y.Offset + (Dropdown.HideName and 0 or 4))
-			DropdownInstance.Size = UDim2.new(1, 0, 0, DropdownInstance.Title.Size.Y.Offset + DropdownInstance.Background.Size.Y.Offset)
+			DropdownInstance.Size = UDim2.new(1, 0, 0, DropdownInstance.Title.Size.Y.Offset + DropdownInstance.Background.Size.Y.Offset + (Dropdown.HideName and -1 or 1))
 		end)
 		OptionContainerInstance.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			OptionContainerInstance.CanvasSize = UDim2.fromOffset(0, OptionContainerInstance.ListLayout.AbsoluteContentSize.Y + 6)

@@ -9,8 +9,12 @@ local CoreGui = game:GetService("CoreGui")
 local GuiInset = GuiService:GetGuiInset()
 local LocalPlayer = PlayerService.LocalPlayer
 
+-- TODO: Change Window.Elements with Bracket.Elements and Window.Flags to Bracket.Flags (DONE)
 -- TODO: Use Self when available (?)
+-- TODO: Benchmark rawget and table[key] in proxify
+-- TODO: Move Flags NoOverwriteProxy to Utilities and use it from there (DONE)
 -- TODO: Make Bracket.Utilities.FormatForSave() and use it in Window.SaveConfig() (?)
+-- TODO: Finish Bracket.Cursor() (DONE)
 -- TODO: Make Self.Utilities.IsWindowsVisible() for Bracket.Watermark()
 -- TODO: Get Window Instance for Bracket.KeybindList() somehow
 -- TODO: Rewrite dropdown options
@@ -109,7 +113,7 @@ Bracket.Utilities = {
 			end,
 			__newindex = function(Self, Key, Value)
 				local Element = Elements[#Elements]
-				if Element.IgnoreFlag then
+                if Element.IgnoreFlag then
 					return
 				end
 				if Proxy[Key] ~= nil and not table.find(Exclude, Element) then
@@ -319,7 +323,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
-			Config = Config:gsub(`{FolderName}/Configs/`, "")
+			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
 			Config = Config:gsub(".json", "")
 
 			Configs[#Configs + 1] = Config
@@ -337,7 +341,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
-			Config = Config:gsub(`{FolderName}/Configs/`, "")
+			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
 			Config = Config:gsub(".json", "")
 
 			Configs[#Configs + 1] = {
@@ -348,16 +352,6 @@ Bracket.Utilities = {
 		end
 
 		return Configs
-	end,
-	FormatForSave = function(Self, Value)
-		if type(Value) == "table" then
-			return HttpService:JSONEncode(Value)
-		end
-
-		return tostring(Value)
-	end,
-	IsWindowsVisible = function(Self, WindowInstance)
-		return WindowInstance and WindowInstance.Visible
 	end
 }
 Bracket.Instances = {
@@ -3730,7 +3724,7 @@ Bracket.Templates = {
 		DropdownInstance.Title:GetPropertyChangedSignal("TextBounds"):Connect(function()
 			DropdownInstance.Title.Size = Dropdown.HideName and UDim2.fromScale(1, 0) or UDim2.new(1, 0, 0, DropdownInstance.Title.TextBounds.Y)
 			DropdownInstance.Background.Position = UDim2.new(0.5, 0, 0, DropdownInstance.Title.Size.Y.Offset + (Dropdown.HideName and 0 or 4))
-			DropdownInstance.Size = UDim2.new(1, 0, 0, DropdownInstance.Title.Size.Y.Offset + DropdownInstance.Background.Size.Y.Offset + (Dropdown.HideName and -1 or 1))
+			DropdownInstance.Size = UDim2.new(1, 0, 0, DropdownInstance.Title.Size.Y.Offset + DropdownInstance.Background.Size.Y.Offset)
 		end)
 		OptionContainerInstance.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			OptionContainerInstance.CanvasSize = UDim2.fromOffset(0, OptionContainerInstance.ListLayout.AbsoluteContentSize.Y + 6)
@@ -4380,17 +4374,17 @@ function Bracket.KeybindList(Self, KeybindList)
 		KeybindInstance.Size = Size
 	end)
 
-	--[[Self.Instance.Background.Changed:Connect(function(Property)
-		if Property == "Image" then
-			KeybindInstance.Background.Image = Self.Instance.Background.Image
-		elseif Property == "ImageColor3" then
-			KeybindInstance.Background.ImageColor3 = Self.Instance.Background.ImageColor3
-		elseif Property == "ImageTransparency" then
-			KeybindInstance.Background.ImageTransparency = Self.Instance.Background.ImageTransparency
-		elseif Property == "TileSize" then
-			KeybindInstance.Background.TileSize = Self.Instance.Background.TileSize
-		end
-	end)]]
+	-- Self.Instance.Background.Changed:Connect(function(Property)
+	-- 	if Property == "Image" then
+	-- 		KeybindInstance.Background.Image = Self.Instance.Background.Image
+	-- 	elseif Property == "ImageColor3" then
+	-- 		KeybindInstance.Background.ImageColor3 = Self.Instance.Background.ImageColor3
+	-- 	elseif Property == "ImageTransparency" then
+	-- 		KeybindInstance.Background.ImageTransparency = Self.Instance.Background.ImageTransparency
+	-- 	elseif Property == "TileSize" then
+	-- 		KeybindInstance.Background.TileSize = Self.Instance.Background.TileSize
+	-- 	end
+	-- end)
 
 	for Index, Element in pairs(Self.Elements) do
 		if Element.Type == "Keybind" and not Element.IgnoreList then

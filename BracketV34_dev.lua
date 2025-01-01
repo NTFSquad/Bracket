@@ -323,6 +323,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
+			Config = Config:gsub(`/`, "\\") -- NTF/Configs/eaeaea.json moment
 			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
 			Config = Config:gsub(".json", "")
 
@@ -341,6 +342,7 @@ Bracket.Utilities = {
 
 		local Configs = {}
 		for Index, Config in pairs(listfiles(`{FolderName}\\Configs`) or {}) do
+			Config = Config:gsub(`/`, "\\") -- NTF/Configs/eaeaea.json moment
 			Config = Config:gsub(`{FolderName}\\Configs\\`, "")
 			Config = Config:gsub(".json", "")
 
